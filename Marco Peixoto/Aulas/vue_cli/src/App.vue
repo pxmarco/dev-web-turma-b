@@ -4,6 +4,10 @@
     <home-component/>
     <hr>
     <HomeComponent />
+    <hr>
+    <UsuarioComponent />
+    <hr>
+    <EstiloComponent />
   </div>
  
 </template>
@@ -11,10 +15,24 @@
 
 <script>
 import HomeComponent from './components/HomeComponent.vue';
+import UsuarioComponent from './components/UsuarioComponent.vue';
+import EstiloComponent from './components/EstiloComponent.vue';
+
 export default {
   name: 'App',
   components: {
     HomeComponent,
+    UsuarioComponent,
+    EstiloComponent,
+  },
+  mounted() {
+    console.log("mounted");
+  },
+  errorCaptured() {
+    console.log("errorCaptured");
+  },
+  created() {
+    console.log("created");
   },
 };
 </script>
