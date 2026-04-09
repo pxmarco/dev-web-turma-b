@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1>Já corta!</h1>
-        <p class="subtitulo">XOXO</p>
+        <h1>Tem na rua!</h1>
+        <p class="subtitulo">Ops</p>
     </div>
 </template>
 
@@ -13,9 +13,9 @@ export default {
 
 <style scoped>
 h1 {
-    color: palevioletred;
+    color: rgb(105, 39, 0);
 }
 .subtitulo {
-    color: palevioletred;
+    color: rgb(105, 39, 0);
 }
 </style>

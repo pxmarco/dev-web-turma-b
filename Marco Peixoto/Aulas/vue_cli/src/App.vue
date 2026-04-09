@@ -5,9 +5,14 @@
     <hr>
     <HomeComponent />
     <hr>
-    <UsuarioComponent />
+    <UsuarioComponent v-show="componentUsuarioVisivel"/>
     <hr>
     <EstiloComponent />
+    <hr>
+    <ImagemComponent 
+    @visibilidade-img="escutarVisibilidadeImg"
+      urlImagem="https://static.vakinha.com.br/uploads/vakinha/image/2763367/16482923794298474752451884422286.jpg"
+      larguraImg="400"/>
   </div>
  
 </template>
@@ -17,6 +22,7 @@
 import HomeComponent from './components/HomeComponent.vue';
 import UsuarioComponent from './components/UsuarioComponent.vue';
 import EstiloComponent from './components/EstiloComponent.vue';
+import ImagemComponent from './components/ImagemComponent.vue';
 
 export default {
   name: 'App',
@@ -24,6 +30,17 @@ export default {
     HomeComponent,
     UsuarioComponent,
     EstiloComponent,
+    ImagemComponent,
+  },
+  data() {
+    return {
+      componentUsuarioVisivel: true,
+    };
+  },
+  methods: {
+    escutarVisibilidadeImg(isVisivel) {
+      this.componentUsuarioVisivel = !isVisivel;
+    },
   },
   mounted() {
     console.log("mounted");
@@ -36,7 +53,6 @@ export default {
   },
 };
 </script>
-
 
 <style>
 #app {
