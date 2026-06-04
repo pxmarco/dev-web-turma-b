@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form id="pedido-form" @submit="criarPedido($event)">
+<form id="pedido-form" @submit.prevent="criarPedido">
       
       <div>
         <p id="nome-hamburguer-content">
@@ -128,4 +128,103 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+#foto-content {
+  margin-bottom: 16px;
+  border-radius: 16px;
+  position: relative;
+  z-index: -1;
+  justify-content: center;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+#nome-hamburguer-content {
+  font-size: 43px;
+  font-weight: bold;
+  text-align: start;
+  margin-bottom: -90px;
+  margin-left: 40px;
+  color: antiquewhite;
+  padding: 16px;
+}
+
+#form-pedido {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #222;
+  padding: 5px 12px;
+  flex-direction: start;
+  display: flex;
+  border-left: 4px solid darkgoldenrod;
+}
+
+input,
+select {
+  padding: 12px;
+  width: 300px;
+  border: solid #222 1px;
+  border-radius: 8px;
+  height: 20px;
+  font-size: 12px;
+}
+
+select {
+  height: 45px;
+}
+
+#opcionais-titulo {
+  width: 100%;
+}
+
+#opcionais-subtitulo {
+  display: flex;
+  align-items: flex-start;
+  align-content: center;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.checkbox-container span {
+  margin-left: 6px;
+  font-weight: bold;
+}
+
+.checkbox-container span,
+.checkbox-container input {
+  width: auto;
+  height: 20px;
+}
+
+.submit-btn {
+  background-color: #222;
+  color: darkgoldenrod;
+  font-weight: bold;
+  border: none;
+  font-size: 18px;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 0 auto;
+  cursor: pointer;
+  width: 100%;
+  height: auto;
+  transition: 0.5s;
+}
+
+.submit-btn:hover {
+  background-color: darkgoldenrod;
+  color: #222;
+}
+</style>
