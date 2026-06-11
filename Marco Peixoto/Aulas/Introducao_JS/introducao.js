@@ -120,3 +120,8 @@ const objTest = {
         log("Oi");
     }
 }
+
+function toggleImage() {
+    let img = document.getElementById ("minhaImagem");
+    img.style.display = img.style.display === "none"? "block" : "none";
+}
