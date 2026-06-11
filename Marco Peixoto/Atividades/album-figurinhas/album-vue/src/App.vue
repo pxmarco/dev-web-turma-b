@@ -6,7 +6,6 @@
       <p>Selecione uma seleção para ver o elenco</p>
     </header>
 
-    <!-- Dropdown de países -->
     <div class="selecao">
       <label for="pais">Escolha uma seleção:</label>
       <select id="pais" v-model="paisSelecionado" @change="carregarFigurinhas">
@@ -20,7 +19,6 @@
     <p v-if="erro" class="erro">{{ erro }}</p>
     <p v-if="carregando" class="status">Carregando figurinhas...</p>
 
-    <!-- Grid de cards -->
     <div v-if="jogadores.length > 0" class="grid">
       <div v-for="jogador in jogadores" :key="jogador.id" class="card">
         <img :src="jogador.photo" :alt="jogador.name" @error="imgFallback" />
@@ -43,7 +41,7 @@
 import { ref, onMounted } from 'vue'
 
 const API_KEY = 'e14912b7be2fbbe498faa4b3b1ee5a17'
-const USAR_MOCK = false
+const USAR_MOCK = true
 
 import mockPaises from './mock/paises.json'
 import mockElenco from './mock/elenco.json'
@@ -69,7 +67,6 @@ onMounted(async () => {
       }
     })
     const dados = await response.json()
-    // A API retorna { response: [ { name, code, flag }, ... ] }
     paises.value = dados.response
   } catch (e) {
     erro.value = 'Erro ao carregar países.'
@@ -94,8 +91,6 @@ const carregarFigurinhas = async () => {
   carregando.value = true
 
   try {
-    // 1ª Requisição: descobrir o ID numérico do time pelo nome do país
-    // Endpoint: GET /teams?name={paisSelecionado}
     const responseTime = await fetch(
       `https://v3.football.api-sports.io/teams?name=${paisSelecionado.value}`,
       {
@@ -107,11 +102,8 @@ const carregarFigurinhas = async () => {
     )
     const dadosTime = await responseTime.json()
 
-    // Extrai o ID numérico do time (ex: Brazil → 6)
     const teamId = dadosTime.response[0].team.id
 
-    // 2ª Requisição: buscar o elenco completo usando o ID obtido acima
-    // Endpoint: GET /players/squads?team={teamId}
     const responseElenco = await fetch(
       `https://v3.football.api-sports.io/players/squads?team=${teamId}`,
       {
@@ -123,7 +115,6 @@ const carregarFigurinhas = async () => {
     )
     const dadosElenco = await responseElenco.json()
 
-    // A API retorna { response: [ { team: {...}, players: [...] } ] }
     jogadores.value = dadosElenco.response[0].players
 
   } catch (e) {
