@@ -43,7 +43,7 @@
 import { ref, onMounted } from 'vue'
 
 const API_KEY = 'e14912b7be2fbbe498faa4b3b1ee5a17'
-const USAR_MOCK = true
+const USAR_MOCK = false
 
 import mockPaises from './mock/paises.json'
 import mockElenco from './mock/elenco.json'
