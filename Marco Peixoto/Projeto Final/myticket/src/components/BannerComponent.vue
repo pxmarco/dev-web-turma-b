@@ -1,6 +1,6 @@
 <template>
   <div id="main-banner">
-    <h1>Hamburguer de churrasqueiro</h1>
+    <h1>Seus ingressos, sua experiência</h1>
   </div>
 </template>
 <script>
@@ -12,7 +12,7 @@ export default {
 #main-banner {
   background-image: url("/public/img/banner.jpeg");
   height: 300px;
-  background-position: 0;
+  background-position: center;
   background-size: cover;
   display: flex;
   align-items: center;

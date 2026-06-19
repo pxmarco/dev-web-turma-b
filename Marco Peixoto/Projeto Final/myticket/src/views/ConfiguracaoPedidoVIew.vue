@@ -1,12 +1,11 @@
 <template>
   <div>
     <h1>Configuração do Pedido</h1>
-    <PedidoComponent :burguer="hamburguerSelecionado"/>
+    <PedidoComponent :evento="eventoSelecionado"/>
   </div>
 </template>
 <script>
 import PedidoComponent from '@/components/PedidoComponent.vue';
-
 
 export default {
   name: "ConfiguracaoPedidoView",
@@ -15,14 +14,14 @@ export default {
   },
   data() {
     return {
-      hamburguerSelecionado: null,
+      eventoSelecionado: null,
     };
   },
   mounted() {
     const query = this.$route.query;
-    if(query.burguer) {
-      const decodeBurguer = JSON.parse(decodeURIComponent(query.burguer));
-      this.hamburguerSelecionado = decodeBurguer;
+    if(query.evento) {
+      const decodeEvento = JSON.parse(decodeURIComponent(query.evento));
+      this.eventoSelecionado = decodeEvento;
     }
   }
 };

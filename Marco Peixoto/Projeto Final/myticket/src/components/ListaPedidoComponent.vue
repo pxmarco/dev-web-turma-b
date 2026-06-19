@@ -1,13 +1,19 @@
 <template>
   <div>
+    <AlertaComponent
+      :mensagem="alertaMensagem"
+      :tipo="alertaTipo"
+      :isVisible="alertaVisivel"
+    />
+
     <div id="pedidos-tabela">
       <div>
         <div id="pedidos-tabela-cabecalho">
           <div id="ordem-id">#ID</div>
           <div>Nome</div>
-          <div>Hamburguer</div>
-          <div>Ponto</div>
-          <div>opcionais</div>
+          <div>Evento</div>
+          <div>Setor</div>
+          <div>Opcionais</div>
           <div>Status</div>
           <div id="div-acoes">Ações</div>
         </div>
@@ -21,18 +27,18 @@
     >
       <div id="ordem-numero">{{ pedido.id }}</div>
       <div>{{ pedido.nome }}</div>
-      <div>{{ pedido.burguer.nome }}</div>
-      <div>{{ pedido.ponto.descricao }}</div>
+      <div>{{ pedido.evento.nome }}</div>
+      <div>{{ pedido.setor.descricao }}</div>
       <div>
         <ul>
-          <li v-for="(complemento, index) in pedido.complemento" :key="index">
-            {{ complemento.nome }}
+          <li v-for="(pacote, index) in pedido.pacote" :key="index">
+            {{ pacote.nome }}
           </li>
         </ul>
         <div class="divider"></div>
         <ul>
-          <li v-for="(refri, index) in pedido.bebidas" :key="index">
-            {{ refri.nome }}
+          <li v-for="(extra, index) in pedido.extras" :key="index">
+            {{ extra.nome }}
           </li>
         </ul>
       </div>
@@ -54,9 +60,9 @@
         </select>
       </div>
       <div id="div-acoes">
-        <img 
-          src="/img/icone_lixeira.png" 
-          width="35px" 
+        <img
+          src="/img/icone_lixeira.png"
+          width="35px"
           height="35px"
           @click="deletarPedido($event, pedido.id)"
           style="cursor: pointer;"
@@ -66,15 +72,35 @@
   </div>
 </template>
 <script>
+import AlertaComponent from "@/components/AlertaComponent.vue";
+
 export default {
   name: "ListaPedidoComponent",
+
+  components: {
+    AlertaComponent,
+  },
+
   data() {
     return {
       listaPedidosRealizados: [],
       listaStatusPedido: [],
+      alertaMensagem: "",
+      alertaTipo: "info",
+      alertaVisivel: false,
     };
   },
   methods: {
+    exibirAlerta(mensagem, tipo) {
+      this.alertaMensagem = mensagem;
+      this.alertaTipo = tipo;
+      this.alertaVisivel = true;
+
+      setTimeout(() => {
+        this.alertaVisivel = false;
+      }, 3000);
+    },
+
     async consultarPedidos() {
       const response = await fetch("http://localhost:3000/pedidos");
       this.listaPedidosRealizados = await response.json();
@@ -91,13 +117,14 @@ export default {
         headers: { "Content-type": "application/json" },
         body: atualizacaoJson,
       });
-      //fazer algo ápos alterar
+      //fazer algo após alterar
     },
     async deletarPedido(event, idPedido) {
-      const response = await fetch(`http://localhost:3000/pedidos/${idPedido}`, {
+      await fetch(`http://localhost:3000/pedidos/${idPedido}`, {
         method: "DELETE",
       });
       await this.consultarPedidos();
+      this.exibirAlerta("Pedido removido com sucesso!", "sucesso");
     },
   },
   mounted() {

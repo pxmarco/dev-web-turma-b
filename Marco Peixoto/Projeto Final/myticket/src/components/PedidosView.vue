@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Olá Pedidos</h1>
+    <h1>Meus Pedidos</h1>
     <ListaPedidoComponent/>
   </div>
 </template>

@@ -1,56 +1,62 @@
 <template>
   <div>
-<form id="pedido-form" @submit.prevent="criarPedido">
-      
+    <form id="pedido-form" @submit.prevent="criarPedido">
+
       <div>
         <p id="nome-hamburguer-content">
-          {{ burguer && burguer.nome ? burguer.nome : "--" }}
+          {{ evento && evento.nome ? evento.nome : "--" }}
         </p>
 
         <img
           id="foto-content"
-          :src="burguer && burguer.foto ? burguer.foto : ''"
+          :src="evento && evento.foto ? evento.foto : ''"
         />
       </div>
 
+      <AlertaComponent
+        :mensagem="alertaMensagem"
+        :tipo="alertaTipo"
+        :isVisible="alertaVisivel"
+      />
+
       <div class="inputs" id="form-pedido">
         <label>Nome</label>
-        <input v-model="nomeClientes" 
-        type="text" 
-        placeholder="Digite seu Nome" 
+        <input v-model="nomeClientes"
+        type="text"
+        placeholder="Digite seu Nome"
         id="nome-cliente"
         />
       </div>
 
       <div class="inputs">
-        <label>Ponto da carne</label>
+        <label>Setor do ingresso</label>
 
-        <select v-model="pontoCarneSelecionado" name="ponto-carne" id="ponto-carne">
-          <option value="" selected>Selecione o ponto</option>
-          <option v-for="pontoCarne in listaPontosCarne"
-          :key="pontoCarne.id"
-          :value="pontoCarne">{{ pontoCarne.descricao }}</option>
+        <select v-model="setorSelecionado" name="setor" id="setor">
+          <option value="" selected>Selecione o setor</option>
+          <option v-for="setor in listaTiposSetor"
+          :key="setor.id"
+          :value="setor">{{ setor.descricao }}</option>
         </select>
       </div>
 
       <div>
         <label id="opcionais-titulo">Selecionar os opcionais</label>
-        <label id="opcionais-subtitulo">Selecionar os complementos</label>
+        <label id="opcionais-subtitulo">Selecionar pacotes</label>
 
-        <div v-for="complemento in listaComplementos"
-        :key="complemento.id" 
+        <div v-for="pacote in listaPacotes"
+        :key="pacote.id"
         class="checkbox-container">
-          <input type="checkbox" :name="complemento.nome" :value="complemento" v-model="listaCpmplementesSelecionados"/>
-          <span>{{ complemento.nome }}</span>
+          <input type="checkbox" :name="pacote.nome" :value="pacote" v-model="listaPacotesSelecionados"/>
+          <span>{{ pacote.nome }}</span>
         </div>
 
-        <label>Adicione uma bebida</label>
+        <label>Adicione um extra</label>
 
-        <div v-for="bebidas in listaBebidas"
-        :key="bebidas.id"
+        <div v-for="extra in listaExtras"
+        :key="extra.id"
         class="checkbox-container">
-          <input type="checkbox" :name="bebidas.nome" :value="bebidas" v-model="ListaBebidaSelecionadas"/>
-          <span>{{ bebidas.nome }}</span>
+          <input type="checkbox" :name="extra.nome" :value="extra" v-model="listaExtrasSelecionados"/>
+          <span>{{ extra.nome }}</span>
         </div>
       </div>
 
@@ -67,62 +73,104 @@
 </template>
 
 <script>
+import AlertaComponent from "@/components/AlertaComponent.vue";
+
 export default {
   name: "PedidoComponent",
 
+  components: {
+    AlertaComponent,
+  },
+
   props: {
-    burguer: null,
+    evento: null,
   },
 
   data() {
     return {
-      listaPontosCarne: [],
-      listaComplementos: [],
-      listaBebidas: [],
+      listaTiposSetor: [],
+      listaPacotes: [],
+      listaExtras: [],
       nomeClientes: "",
-      pontoCarneSelecionado: "",
-      listaCpmplementesSelecionados: [],
-      ListaBebidaSelecionadas: [],
+      setorSelecionado: "",
+      listaPacotesSelecionados: [],
+      listaExtrasSelecionados: [],
+      alertaMensagem: "",
+      alertaTipo: "info",
+      alertaVisivel: false,
     };
   },
 
   methods: {
-    async getTiposPontos() {
-      const response = await fetch("http://localhost:3000/tipos_pontos");
+    exibirAlerta(mensagem, tipo) {
+      this.alertaMensagem = mensagem;
+      this.alertaTipo = tipo;
+      this.alertaVisivel = true;
+
+      setTimeout(() => {
+        this.alertaVisivel = false;
+      }, 3000);
+    },
+
+    async getTiposSetor() {
+      const response = await fetch("http://localhost:3000/tipos_setor");
       const dados = await response.json();
-      this.listaPontosCarne = dados;
+      this.listaTiposSetor = dados;
     },
     async getOpcionais() {
-        const response = await fetch("http://localhost:3000/opcionais");
-        const dados = await response.json();
-        this.listaComplementos = dados.complemento;
-        this.listaBebidas = dados.bebidas;
+      const response = await fetch("http://localhost:3000/opcionais");
+      const dados = await response.json();
+      this.listaPacotes = dados.pacote;
+      this.listaExtras = dados.extras;
     },
-    async criarPedido(e) {
+    async criarPedido() {
 
-        const dadosPedido = {
-            nome: this.nomeClientes,
-            ponto: this.pontoCarneSelecionado,
-            bebidas: Array.from(this.ListaBebidaSelecionadas),
-            complemento: Array.from(this.listaCpmplementesSelecionados),
-            burguer: this.burguer,
-            statusId: 5,
-        };
+      if (!this.nomeClientes) {
+        this.exibirAlerta("Por favor, informe o seu nome antes de continuar.", "erro");
+        return;
+      }
 
-        console.log(dadosPedido);
+      if (!this.setorSelecionado) {
+        this.exibirAlerta("Selecione o setor do ingresso antes de confirmar.", "erro");
+        return;
+      }
 
-        const dadosJson = JSON.stringify(dadosPedido);
+      if (!this.evento) {
+        this.exibirAlerta("Nenhum evento selecionado. Volte ao menu e escolha um evento.", "alerta");
+        return;
+      }
 
-        const req = await fetch("http://localhost:3000/pedidos", {
-            method: "POST",
-            headers: {"Content-Type": "application/json" },
-            body: dadosJson,
-        });
+      const dadosPedido = {
+        nome: this.nomeClientes,
+        setor: this.setorSelecionado,
+        extras: Array.from(this.listaExtrasSelecionados),
+        pacote: Array.from(this.listaPacotesSelecionados),
+        evento: this.evento,
+        statusId: 5,
+      };
+
+      console.log(dadosPedido);
+
+      const dadosJson = JSON.stringify(dadosPedido);
+
+      const req = await fetch("http://localhost:3000/pedidos", {
+        method: "POST",
+        headers: {"Content-Type": "application/json" },
+        body: dadosJson,
+      });
+
+      if (req.ok) {
+        this.exibirAlerta("Pedido realizado com sucesso!", "sucesso");
+        setTimeout(() => {
+          this.$router.push("/pedidos");
+        }, 2000);
+      } else {
+        this.exibirAlerta("Erro ao realizar o pedido. Tente novamente.", "erro");
+      }
     },
   },
   mounted() {
-    this.getTiposPontos();
-    this.getOpcionais();
+    this.getTiposSetor();
     this.getOpcionais();
   },
 };

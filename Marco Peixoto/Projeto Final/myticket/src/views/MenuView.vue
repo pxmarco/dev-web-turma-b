@@ -1,21 +1,20 @@
 <template>
   <div>
-    <h1>Menu</h1>
+    <h1>Eventos</h1>
     <div id="scroll-horizontal">
-      <div id="card-content" v-for="burguer in listaMenuHamburguers" :key="burguer.id">
+      <div id="card-content" v-for="evento in listaMenuEventos" :key="evento.id">
         <div id="card-linha">
           <div class="foto-hamburguer">
-            <img 
+            <img
             width="300"
             height="200"
-            :src="burguer.foto">
+            :src="evento.foto">
             <div id="card-coluna">
-              <p id="nome-content">{{burguer.nome}}</p>
-              <p id="preco-content">R$ {{burguer.valor}},00</p>
-              <p id="descricao-content">{{burguer.descricao}}</p>
-              <button @click="selecionarBurguer(burguer)">Selecionar</button>
+              <p id="nome-content">{{evento.nome}}</p>
+              <p id="preco-content">R$ {{evento.valor}},00</p>
+              <p id="descricao-content">{{evento.descricao}}</p>
+              <button @click="selecionarEvento(evento)">Selecionar</button>
             </div>
-
           </div>
         </div>
       </div>
@@ -27,20 +26,20 @@ export default {
   name: "MenuView",
   data(){
     return{
-      listaMenuHamburguers: [],
+      listaMenuEventos: [],
     };
   },
   methods: {
     async consultarMenu() {
-      const response = await fetch ("http://localhost:3000/menu"); 
+      const response = await fetch ("http://localhost:3000/menu");
       const dados = await response.json();
-      this.listaMenuHamburguers = dados.burgues;
-      console.log(this.listaMenuHamburguers);
+      this.listaMenuEventos = dados.eventos;
+      console.log(this.listaMenuEventos);
     },
-    selecionarBurguer(burguerSelecionado) {
-      const param = JSON.stringify(burguerSelecionado);
-      const burguerJson = encodeURIComponent(param);
-      this.$router.push({path: "/config-pedido", query: {burguer: burguerJson}})
+    selecionarEvento(eventoSelecionado) {
+      const param = JSON.stringify(eventoSelecionado);
+      const eventoJson = encodeURIComponent(param);
+      this.$router.push({path: "/config-pedido", query: {evento: eventoJson}})
     }
   },
   mounted() {
@@ -136,5 +135,4 @@ export default {
   color: rgb(255, 214, 29);
   background-color: rgb(58, 0, 0);
 }
-
 </style>
