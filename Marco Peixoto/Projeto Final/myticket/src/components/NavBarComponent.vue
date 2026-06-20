@@ -2,11 +2,12 @@
   <div>
     <nav id="nav">
       <router-link to="/" id="logo-url">
-        <img src="/img/logo_myticket.png" id="logo" />
+        <img src="@/assets/logo.png" id="logo" alt="MyTicket" />
       </router-link>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/menu">Eventos</router-link> |
-      <router-link to="/pedidos">Pedidos</router-link>
+      <div id="nav-links">
+        <router-link to="/menu">Eventos</router-link>
+        <router-link to="/pedidos">Ingressos</router-link>
+      </div>
     </nav>
   </div>
 </template>
@@ -16,42 +17,49 @@ export default {
 };
 </script>
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+#nav {
+  background-color: #0d0d0d;
+  border-bottom: 3px solid #7c3aed;
+  padding: 14px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+#logo-url {
+  text-decoration: none;
+}
+
 #logo {
-  width: 60px;
-  height: 60px;
+  width: 130px;
+  height: 130px;
+  object-fit: contain;
+  transition: 0.2s;
 }
 
 #logo:hover {
-  width: 70px;
-  height: 70px;
-  rotate: 360deg;
-  transition: 0.2s;
+  width: 100px;
+  height: 100px;
 }
 
-#nav #logo-url {
-  margin: auto;
-  margin-left: 0;
-}
-
-#nav {
-  background-color: #333;
-  border-bottom: darkgoldenrod 4px solid;
-  padding: 15px 50px;
+#nav-links {
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  gap: 30px;
 }
 
 #nav a {
-  color: darkgoldenrod;
+  color: #e2e8f0;
   text-decoration: none;
-  margin-left: 20px;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: color 0.2s;
 }
 
-#nav a:hover {
-  color: white;
-  font-size: 22px;
-  transition: 0.2s;
+#nav a:hover,
+#nav a.router-link-active {
+  color: #a78bfa;
 }
 </style>

@@ -1,74 +1,57 @@
 <template>
-  <div>
-    <form id="pedido-form" @submit.prevent="criarPedido">
-
-      <div>
-        <p id="nome-hamburguer-content">
-          {{ evento && evento.nome ? evento.nome : "--" }}
-        </p>
-
-        <img
-          id="foto-content"
-          :src="evento && evento.foto ? evento.foto : ''"
-        />
+  <div id="pedido-wrapper">
+    <div id="pedido-header">
+      <img id="foto-content" :src="evento && evento.foto ? evento.foto : ''" />
+      <div id="header-overlay">
+        <p id="nome-hamburguer-content">{{ evento && evento.nome ? evento.nome : "--" }}</p>
+        <p id="preco-hamburguer-content" v-if="evento">R$ {{ evento.valor }},00</p>
       </div>
+    </div>
 
+    <div id="pedido-form-box">
       <AlertaComponent
         :mensagem="alertaMensagem"
         :tipo="alertaTipo"
         :isVisible="alertaVisivel"
       />
 
-      <div class="inputs" id="form-pedido">
-        <label>Nome</label>
-        <input v-model="nomeClientes"
-        type="text"
-        placeholder="Digite seu Nome"
-        id="nome-cliente"
-        />
-      </div>
+      <form id="pedido-form" @submit.prevent="criarPedido">
 
-      <div class="inputs">
-        <label>Setor do ingresso</label>
-
-        <select v-model="setorSelecionado" name="setor" id="setor">
-          <option value="" selected>Selecione o setor</option>
-          <option v-for="setor in listaTiposSetor"
-          :key="setor.id"
-          :value="setor">{{ setor.descricao }}</option>
-        </select>
-      </div>
-
-      <div>
-        <label id="opcionais-titulo">Selecionar os opcionais</label>
-        <label id="opcionais-subtitulo">Selecionar pacotes</label>
-
-        <div v-for="pacote in listaPacotes"
-        :key="pacote.id"
-        class="checkbox-container">
-          <input type="checkbox" :name="pacote.nome" :value="pacote" v-model="listaPacotesSelecionados"/>
-          <span>{{ pacote.nome }}</span>
+        <div class="inputs">
+          <label>Nome do comprador</label>
+          <input v-model="nomeClientes" type="text" placeholder="Digite seu nome" id="nome-cliente" />
         </div>
 
-        <label>Adicione um extra</label>
-
-        <div v-for="extra in listaExtras"
-        :key="extra.id"
-        class="checkbox-container">
-          <input type="checkbox" :name="extra.nome" :value="extra" v-model="listaExtrasSelecionados"/>
-          <span>{{ extra.nome }}</span>
+        <div class="inputs">
+          <label>Setor do ingresso</label>
+          <select v-model="setorSelecionado" name="setor" id="setor">
+            <option value="">Selecione o setor</option>
+            <option v-for="setor in listaTiposSetor" :key="setor.id" :value="setor">
+              {{ setor.descricao }}
+            </option>
+          </select>
         </div>
-      </div>
 
-      <div class="inputs">
-        <input
-          type="submit"
-          class="submit-btn"
-          value="Confirmar pedido"
-        />
-      </div>
+        <div class="inputs">
+          <label>Pacotes</label>
+          <div v-for="pacote in listaPacotes" :key="pacote.id" class="checkbox-container">
+            <input type="checkbox" :value="pacote" v-model="listaPacotesSelecionados" />
+            <span>{{ pacote.nome }}</span>
+          </div>
+        </div>
 
-    </form>
+        <div class="inputs">
+          <label>Extras</label>
+          <div v-for="extra in listaExtras" :key="extra.id" class="checkbox-container">
+            <input type="checkbox" :value="extra" v-model="listaExtrasSelecionados" />
+            <span>{{ extra.nome }}</span>
+          </div>
+        </div>
+
+        <input type="submit" class="submit-btn" value="Confirmar pedido" />
+
+      </form>
+    </div>
   </div>
 </template>
 
@@ -77,15 +60,8 @@ import AlertaComponent from "@/components/AlertaComponent.vue";
 
 export default {
   name: "PedidoComponent",
-
-  components: {
-    AlertaComponent,
-  },
-
-  props: {
-    evento: null,
-  },
-
+  components: { AlertaComponent },
+  props: { evento: null },
   data() {
     return {
       listaTiposSetor: [],
@@ -100,46 +76,36 @@ export default {
       alertaVisivel: false,
     };
   },
-
   methods: {
     exibirAlerta(mensagem, tipo) {
       this.alertaMensagem = mensagem;
       this.alertaTipo = tipo;
       this.alertaVisivel = true;
-
-      setTimeout(() => {
-        this.alertaVisivel = false;
-      }, 3000);
+      setTimeout(() => { this.alertaVisivel = false; }, 3000);
     },
-
     async getTiposSetor() {
-      const response = await fetch("http://localhost:3000/tipos_setor");
-      const dados = await response.json();
-      this.listaTiposSetor = dados;
+      const response = await fetch("https://api-myticket.onrender.com/tipos_setor");
+      this.listaTiposSetor = await response.json();
     },
     async getOpcionais() {
-      const response = await fetch("http://localhost:3000/opcionais");
+      const response = await fetch("https://api-myticket.onrender.com/opcionais");
       const dados = await response.json();
       this.listaPacotes = dados.pacote;
       this.listaExtras = dados.extras;
     },
     async criarPedido() {
-
       if (!this.nomeClientes) {
         this.exibirAlerta("Por favor, informe o seu nome antes de continuar.", "erro");
         return;
       }
-
       if (!this.setorSelecionado) {
         this.exibirAlerta("Selecione o setor do ingresso antes de confirmar.", "erro");
         return;
       }
-
       if (!this.evento) {
         this.exibirAlerta("Nenhum evento selecionado. Volte ao menu e escolha um evento.", "alerta");
         return;
       }
-
       const dadosPedido = {
         nome: this.nomeClientes,
         setor: this.setorSelecionado,
@@ -148,22 +114,14 @@ export default {
         evento: this.evento,
         statusId: 5,
       };
-
-      console.log(dadosPedido);
-
-      const dadosJson = JSON.stringify(dadosPedido);
-
-      const req = await fetch("http://localhost:3000/pedidos", {
+      const req = await fetch("https://api-myticket.onrender.com/pedidos", {
         method: "POST",
-        headers: {"Content-Type": "application/json" },
-        body: dadosJson,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dadosPedido),
       });
-
       if (req.ok) {
         this.exibirAlerta("Pedido realizado com sucesso!", "sucesso");
-        setTimeout(() => {
-          this.$router.push("/pedidos");
-        }, 2000);
+        setTimeout(() => { this.$router.push("/pedidos"); }, 2000);
       } else {
         this.exibirAlerta("Erro ao realizar o pedido. Tente novamente.", "erro");
       }
@@ -177,102 +135,127 @@ export default {
 </script>
 
 <style scoped>
-#foto-content {
-  margin-bottom: 16px;
-  border-radius: 16px;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+#pedido-wrapper {
+  font-family: 'Poppins', sans-serif;
+  background-color: #0f0f0f;
+  min-height: 100vh;
+  color: #e2e8f0;
+}
+
+#pedido-header {
   position: relative;
-  z-index: -1;
-  justify-content: center;
+  height: 220px;
+  overflow: hidden;
+}
+
+#foto-content {
   width: 100%;
-  height: 180px;
+  height: 220px;
   object-fit: cover;
+  filter: brightness(0.4);
+}
+
+#header-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
 }
 
 #nome-hamburguer-content {
-  font-size: 43px;
-  font-weight: bold;
-  text-align: start;
-  margin-bottom: -90px;
-  margin-left: 40px;
-  color: antiquewhite;
-  padding: 16px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
 }
 
-#form-pedido {
-  max-width: 750px;
-  margin: 0 auto;
+#preco-hamburguer-content {
+  font-size: 22px;
+  color: #a78bfa;
+  margin: 4px 0 0 0;
+}
+
+#pedido-form-box {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 0 20px;
 }
 
 .inputs {
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
+  margin-bottom: 22px;
 }
 
 label {
-  font-weight: bold;
-  margin-bottom: 16px;
-  color: #222;
-  padding: 5px 12px;
-  flex-direction: start;
-  display: flex;
-  border-left: 4px solid darkgoldenrod;
+  font-weight: 600;
+  color: #a78bfa;
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-left: 3px solid #7c3aed;
+  padding-left: 10px;
 }
 
-input,
+input[type="text"],
 select {
-  padding: 12px;
-  width: 300px;
-  border: solid #222 1px;
+  padding: 12px 14px;
+  width: 100%;
+  border: 1px solid #2d2d4e;
   border-radius: 8px;
-  height: 20px;
-  font-size: 12px;
+  background-color: #1a1a2e;
+  color: #e2e8f0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+  height: auto;
 }
 
 select {
-  height: 45px;
+  cursor: pointer;
 }
 
-#opcionais-titulo {
-  width: 100%;
-}
-
-#opcionais-subtitulo {
+.checkbox-container {
   display: flex;
-  align-items: flex-start;
-  align-content: center;
-  width: 100%;
-  margin-bottom: 12px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #1a1a2e;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #2d2d4e;
+  cursor: pointer;
 }
 
 .checkbox-container span {
-  margin-left: 6px;
-  font-weight: bold;
+  font-size: 14px;
+  color: #e2e8f0;
 }
 
-.checkbox-container span,
 .checkbox-container input {
-  width: auto;
-  height: 20px;
+  width: 16px;
+  height: 16px;
+  accent-color: #7c3aed;
 }
 
 .submit-btn {
-  background-color: #222;
-  color: darkgoldenrod;
-  font-weight: bold;
+  background-color: #7c3aed;
+  color: #fff;
+  font-weight: 700;
   border: none;
-  font-size: 18px;
-  border-radius: 12px;
-  padding: 16px;
-  margin: 0 auto;
+  font-size: 16px;
+  border-radius: 10px;
+  padding: 14px;
   cursor: pointer;
   width: 100%;
-  height: auto;
-  transition: 0.5s;
+  font-family: 'Poppins', sans-serif;
+  transition: background-color 0.2s;
+  margin-top: 10px;
 }
 
 .submit-btn:hover {
-  background-color: darkgoldenrod;
-  color: #222;
+  background-color: #5b21b6;
 }
 </style>
